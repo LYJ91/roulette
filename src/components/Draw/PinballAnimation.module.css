@@ -5,21 +5,39 @@
   gap: var(--space-lg);
 }
 
+.boardWrapper {
+  width: 386px;
+  height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: var(--radius-lg);
+  border: 3px solid var(--neon-cyan);
+  box-shadow: 0 0 30px rgba(0, 245, 212, 0.3);
+}
+
+.boardWrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.boardWrapper::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.boardWrapper::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 3px;
+}
+
 .board {
   position: relative;
   width: 380px;
-  height: 700px;
+  height: 1800px;
   background: linear-gradient(180deg, 
     var(--bg-secondary) 0%, 
-    var(--bg-primary) 50%,
+    var(--bg-primary) 30%,
     #0d0d2b 100%
   );
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 3px solid var(--neon-cyan);
-  box-shadow: 
-    0 0 30px rgba(0, 245, 212, 0.3),
-    inset 0 0 60px rgba(0, 0, 0, 0.5);
+  overflow: visible;
 }
 
 .funnelSvg {
@@ -34,18 +52,18 @@
 
 .peg {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #fff, var(--neon-purple));
-  box-shadow: 0 0 8px var(--neon-purple);
+  box-shadow: 0 0 6px var(--neon-purple);
   z-index: 2;
 }
 
 .ball {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -57,10 +75,10 @@
 .ball::before {
   content: '';
   position: absolute;
-  top: 4px;
-  left: 6px;
-  width: 8px;
-  height: 6px;
+  top: 3px;
+  left: 4px;
+  width: 6px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   transform: rotate(-30deg);
@@ -68,10 +86,10 @@
 
 .ballName {
   font-family: 'Jua', sans-serif;
-  font-size: 0.5rem;
+  font-size: 0.4rem;
   color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-  max-width: 24px;
+  max-width: 18px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -266,32 +284,37 @@
 }
 
 @media (max-width: 480px) {
+  .boardWrapper {
+    width: 326px;
+    height: 500px;
+  }
+  
   .board {
     width: 320px;
-    height: 600px;
+    height: 1500px;
   }
   
   .ball {
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
   }
   
   .ballName {
-    font-size: 0.4rem;
-    max-width: 18px;
+    font-size: 0.35rem;
+    max-width: 14px;
   }
   
   .peg {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   
   .finishList {
-    min-width: 80px;
-    max-height: 150px;
+    min-width: 70px;
+    max-height: 120px;
   }
   
   .finishItem {
-    font-size: 0.55rem;
+    font-size: 0.5rem;
   }
 }

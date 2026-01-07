@@ -36,10 +36,10 @@ interface Props {
 }
 
 const BOARD_WIDTH = 380;
-const BOARD_HEIGHT = 700;
-const BALL_RADIUS = 14;
-const PEG_RADIUS = 6;
-const EXIT_WIDTH = 50;
+const BOARD_HEIGHT = 1800;
+const BALL_RADIUS = 10;
+const PEG_RADIUS = 5;
+const EXIT_WIDTH = 40;
 const EXIT_Y = BOARD_HEIGHT - 40;
 
 export function PinballAnimation({ students, winnersCount, onComplete, onStart }: Props) {
@@ -55,32 +55,40 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
   const [finishedBalls, setFinishedBalls] = useState<Ball[]>([]);
   const [statusText, setStatusText] = useState('');
 
-  // Generate pegs in a funnel pattern
+  // Generate pegs in a funnel pattern (only inside funnel walls)
   const generatePegs = useCallback(() => {
     const newPegs: Peg[] = [];
-    const rows = 18;
-    const startY = 100;
+    const rows = 50;
+    const startY = 80;
     const rowSpacing = 32;
+    const pegSpacing = 28;
     
     for (let row = 0; row < rows; row++) {
-      // Funnel shape: wider at top, narrower at bottom
-      const progress = row / rows;
-      const maxWidth = BOARD_WIDTH - 60;
-      const minWidth = EXIT_WIDTH + 40;
-      const rowWidth = maxWidth - (maxWidth - minWidth) * progress * 0.8;
+      const y = startY + row * rowSpacing;
       
-      const pegsInRow = Math.max(3, Math.floor(rowWidth / 35));
-      const actualRowWidth = (pegsInRow - 1) * 35;
-      const startX = (BOARD_WIDTH - actualRowWidth) / 2;
+      // Calculate funnel width at this Y position
+      const progress = y / BOARD_HEIGHT;
+      const maxWidth = BOARD_WIDTH - 80;
+      const minWidth = EXIT_WIDTH + 20;
+      const funnelWidth = maxWidth - (maxWidth - minWidth) * progress * 0.95;
+      
+      const leftWall = (BOARD_WIDTH - funnelWidth) / 2 + 15;
+      const rightWall = (BOARD_WIDTH + funnelWidth) / 2 - 15;
+      const availableWidth = rightWall - leftWall;
+      
+      const pegsInRow = Math.max(2, Math.floor(availableWidth / pegSpacing));
+      const actualRowWidth = (pegsInRow - 1) * pegSpacing;
+      const startX = leftWall + (availableWidth - actualRowWidth) / 2;
       
       // Offset every other row
-      const offset = row % 2 === 0 ? 0 : 17.5;
+      const offset = row % 2 === 0 ? 0 : pegSpacing / 2;
       
       for (let col = 0; col < pegsInRow; col++) {
-        newPegs.push({
-          x: startX + col * 35 + offset,
-          y: startY + row * rowSpacing,
-        });
+        const x = startX + col * pegSpacing + offset;
+        // Only add peg if it's within funnel bounds
+        if (x > leftWall && x < rightWall) {
+          newPegs.push({ x, y });
+        }
       }
     }
     
@@ -96,8 +104,8 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
       id: student.id,
       name: student.name,
       student,
-      x: BOARD_WIDTH / 2 + (Math.random() - 0.5) * 100,
-      y: 30 + Math.random() * 30,
+      x: BOARD_WIDTH / 2 + (Math.random() - 0.5) * 80,
+      y: 20 + Math.random() * 20,
       vx: (Math.random() - 0.5) * 2,
       vy: Math.random() * 2,
       color: NEON_COLORS[i % NEON_COLORS.length],
@@ -371,9 +379,10 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
 
   return (
     <div className={styles.container}>
-      <div className={styles.board}>
-        {/* Funnel walls */}
-        <svg className={styles.funnelSvg} viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}>
+      <div className={styles.boardWrapper}>
+        <div className={styles.board}>
+          {/* Funnel walls */}
+          <svg className={styles.funnelSvg} viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}>
           <defs>
             <linearGradient id="wallGradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="var(--neon-purple)" stopOpacity="0.3" />
@@ -460,23 +469,24 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
           <span className={styles.exitLabel}>🏁 결승점</span>
         </div>
 
-        {/* Finish order display */}
-        <div className={styles.finishList}>
-          <div className={styles.finishTitle}>도착 순서</div>
-          {finishedBalls.slice(-8).reverse().map((ball, idx) => (
-            <motion.div
-              key={ball.id}
-              className={`${styles.finishItem} ${idx < winnersCount ? styles.isWinner : ''}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              style={{ borderColor: ball.color }}
-            >
-              <span className={styles.finishRank}>
-                {finishedBalls.length - finishedBalls.indexOf(ball)}위
-              </span>
-              <span className={styles.finishName}>{ball.name}</span>
-            </motion.div>
-          ))}
+          {/* Finish order display */}
+          <div className={styles.finishList}>
+            <div className={styles.finishTitle}>도착 순서</div>
+            {finishedBalls.slice(-8).reverse().map((ball, idx) => (
+              <motion.div
+                key={ball.id}
+                className={`${styles.finishItem} ${idx < winnersCount ? styles.isWinner : ''}`}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                style={{ borderColor: ball.color }}
+              >
+                <span className={styles.finishRank}>
+                  {finishedBalls.length - finishedBalls.indexOf(ball)}위
+                </span>
+                <span className={styles.finishName}>{ball.name}</span>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
