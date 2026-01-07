@@ -1,11 +1,20 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Home, Draw } from './pages';
 import { ClassManager } from './components/ClassManager';
 import { StudentManager } from './components/StudentManager';
 import { RangeSettings } from './components/Settings';
+import { useStore } from './store/useStore';
 
 function App() {
+  const themeMode = useStore((state) => state.themeMode);
+
+  // Apply theme on initial load
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', themeMode);
+  }, [themeMode]);
+
   return (
     <BrowserRouter>
       <Routes>

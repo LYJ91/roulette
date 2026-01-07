@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Student } from '../../types';
 import { NEON_COLORS, shuffleArray } from '../../utils/random';
+import { AlertModal } from '../common';
 import styles from './PinballAnimation.module.css';
 
 interface Ball {
@@ -54,6 +55,7 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
   const [explosions, setExplosions] = useState<Explosion[]>([]);
   const [finishedBalls, setFinishedBalls] = useState<Ball[]>([]);
   const [statusText, setStatusText] = useState('');
+  const [alertModal, setAlertModal] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   // Generate pegs in a funnel pattern (only inside funnel walls)
   const generatePegs = useCallback(() => {
@@ -339,7 +341,7 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
 
   const handleStart = () => {
     if (students.length < winnersCount) {
-      alert(`최소 ${winnersCount}명의 학생이 필요합니다.`);
+      setAlertModal({ message: `최소 ${winnersCount}명의 학생이 필요합니다.`, type: 'warning' });
       return;
     }
     
@@ -552,6 +554,14 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
           이 구간에 해당하는 학생이 없습니다
         </div>
       )}
+
+      {/* Alert 모달 */}
+      <AlertModal
+        isOpen={!!alertModal}
+        message={alertModal?.message || ''}
+        type={alertModal?.type || 'info'}
+        onClose={() => setAlertModal(null)}
+      />
     </div>
   );
 }

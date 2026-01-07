@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../store/useStore';
+import { AlertModal } from '../common';
 import styles from './RangeSettings.module.css';
 
 export function RangeSettings() {
@@ -17,6 +18,7 @@ export function RangeSettings() {
     max: 0,
     winnersCount: 2,
   });
+  const [alertModal, setAlertModal] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   const handleStartEdit = (range: typeof pointRanges[0]) => {
     setEditingId(range.id);
@@ -33,15 +35,15 @@ export function RangeSettings() {
     
     // Validation
     if (editValues.min < 0) {
-      alert('최소값은 0 이상이어야 합니다.');
+      setAlertModal({ message: '최소값은 0 이상이어야 합니다.', type: 'error' });
       return;
     }
     if (editValues.max <= editValues.min) {
-      alert('최대값은 최소값보다 커야 합니다.');
+      setAlertModal({ message: '최대값은 최소값보다 커야 합니다.', type: 'error' });
       return;
     }
     if (editValues.winnersCount < 1) {
-      alert('당첨자 수는 1명 이상이어야 합니다.');
+      setAlertModal({ message: '당첨자 수는 1명 이상이어야 합니다.', type: 'error' });
       return;
     }
     
@@ -224,6 +226,14 @@ export function RangeSettings() {
           <li>추첨 시 공이 튜브를 통해 나오며 당첨자가 선정됩니다</li>
         </ul>
       </motion.div>
+
+      {/* Alert 모달 */}
+      <AlertModal
+        isOpen={!!alertModal}
+        message={alertModal?.message || ''}
+        type={alertModal?.type || 'info'}
+        onClose={() => setAlertModal(null)}
+      />
     </div>
   );
 }

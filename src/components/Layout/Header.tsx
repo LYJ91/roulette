@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ThemeSwitcher } from '../common';
 import styles from './Header.module.css';
 
 export function Header() {
@@ -22,6 +23,7 @@ export function Header() {
           행운의 룰렛
         </motion.span>
       </Link>
+      <ThemeSwitcher />
     </header>
   );
 }

@@ -1,37 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 :root {
-  /* Dark theme with neon accents */
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-card: #1a1a3a;
-  --bg-hover: #252550;
-  
-  /* Neon colors */
-  --neon-pink: #ff006e;
-  --neon-purple: #8338ec;
-  --neon-blue: #3a86ff;
-  --neon-cyan: #00f5d4;
-  --neon-yellow: #ffbe0b;
-  --neon-orange: #fb5607;
-  --neon-green: #06d6a0;
-  
-  /* Text colors */
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0c0;
-  --text-muted: #606080;
-  
-  /* Gradients */
-  --gradient-pink-purple: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
-  --gradient-blue-cyan: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
-  --gradient-orange-yellow: linear-gradient(135deg, var(--neon-orange), var(--neon-yellow));
-  
-  /* Shadows and glows */
-  --glow-pink: 0 0 20px rgba(255, 0, 110, 0.5);
-  --glow-purple: 0 0 20px rgba(131, 56, 236, 0.5);
-  --glow-blue: 0 0 20px rgba(58, 134, 255, 0.5);
-  --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.5);
-  
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -53,6 +22,134 @@
   --transition-slow: 400ms ease;
 }
 
+/* ========== NEON THEME (Default) ========== */
+:root, [data-theme="neon"] {
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #12122a;
+  --bg-card: #1a1a3a;
+  --bg-hover: #252550;
+  
+  --neon-pink: #ff006e;
+  --neon-purple: #8338ec;
+  --neon-blue: #3a86ff;
+  --neon-cyan: #00f5d4;
+  --neon-yellow: #ffbe0b;
+  --neon-orange: #fb5607;
+  --neon-green: #06d6a0;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0c0;
+  --text-muted: #606080;
+  
+  --gradient-pink-purple: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  --gradient-blue-cyan: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+  --gradient-orange-yellow: linear-gradient(135deg, var(--neon-orange), var(--neon-yellow));
+  
+  --glow-pink: 0 0 20px rgba(255, 0, 110, 0.5);
+  --glow-purple: 0 0 20px rgba(131, 56, 236, 0.5);
+  --glow-blue: 0 0 20px rgba(58, 134, 255, 0.5);
+  --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.5);
+  
+  --scrollbar-thumb: var(--neon-purple);
+  --scrollbar-thumb-hover: var(--neon-pink);
+}
+
+/* ========== LIGHT THEME ========== */
+[data-theme="light"] {
+  --bg-primary: #f8f9fc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f0f2f8;
+  
+  --neon-pink: #e91e63;
+  --neon-purple: #7c3aed;
+  --neon-blue: #2563eb;
+  --neon-cyan: #0891b2;
+  --neon-yellow: #f59e0b;
+  --neon-orange: #ea580c;
+  --neon-green: #10b981;
+  
+  --text-primary: #1a1a2e;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  --gradient-pink-purple: linear-gradient(135deg, #e91e63, #7c3aed);
+  --gradient-blue-cyan: linear-gradient(135deg, #2563eb, #0891b2);
+  --gradient-orange-yellow: linear-gradient(135deg, #ea580c, #f59e0b);
+  
+  --glow-pink: 0 4px 20px rgba(233, 30, 99, 0.25);
+  --glow-purple: 0 4px 20px rgba(124, 58, 237, 0.25);
+  --glow-blue: 0 4px 20px rgba(37, 99, 235, 0.25);
+  --glow-cyan: 0 4px 20px rgba(8, 145, 178, 0.25);
+  
+  --scrollbar-thumb: #c4b5fd;
+  --scrollbar-thumb-hover: #a78bfa;
+}
+
+/* ========== BLUE THEME ========== */
+[data-theme="blue"] {
+  --bg-primary: #0c1929;
+  --bg-secondary: #112240;
+  --bg-card: #1a365d;
+  --bg-hover: #234876;
+  
+  --neon-pink: #f472b6;
+  --neon-purple: #a78bfa;
+  --neon-blue: #60a5fa;
+  --neon-cyan: #22d3ee;
+  --neon-yellow: #fbbf24;
+  --neon-orange: #fb923c;
+  --neon-green: #4ade80;
+  
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --gradient-pink-purple: linear-gradient(135deg, #f472b6, #a78bfa);
+  --gradient-blue-cyan: linear-gradient(135deg, #60a5fa, #22d3ee);
+  --gradient-orange-yellow: linear-gradient(135deg, #fb923c, #fbbf24);
+  
+  --glow-pink: 0 0 25px rgba(244, 114, 182, 0.4);
+  --glow-purple: 0 0 25px rgba(167, 139, 250, 0.4);
+  --glow-blue: 0 0 25px rgba(96, 165, 250, 0.4);
+  --glow-cyan: 0 0 25px rgba(34, 211, 238, 0.4);
+  
+  --scrollbar-thumb: #3b82f6;
+  --scrollbar-thumb-hover: #60a5fa;
+}
+
+/* ========== NIGHT THEME ========== */
+[data-theme="night"] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #141414;
+  --bg-hover: #1f1f1f;
+  
+  --neon-pink: #ff4d8d;
+  --neon-purple: #9f7aea;
+  --neon-blue: #4299e1;
+  --neon-cyan: #38b2ac;
+  --neon-yellow: #ecc94b;
+  --neon-orange: #ed8936;
+  --neon-green: #48bb78;
+  
+  --text-primary: #e2e2e2;
+  --text-secondary: #8a8a8a;
+  --text-muted: #525252;
+  
+  --gradient-pink-purple: linear-gradient(135deg, #ff4d8d, #9f7aea);
+  --gradient-blue-cyan: linear-gradient(135deg, #4299e1, #38b2ac);
+  --gradient-orange-yellow: linear-gradient(135deg, #ed8936, #ecc94b);
+  
+  --glow-pink: 0 0 30px rgba(255, 77, 141, 0.35);
+  --glow-purple: 0 0 30px rgba(159, 122, 234, 0.35);
+  --glow-blue: 0 0 30px rgba(66, 153, 225, 0.35);
+  --glow-cyan: 0 0 30px rgba(56, 178, 172, 0.35);
+  
+  --scrollbar-thumb: #3d3d3d;
+  --scrollbar-thumb-hover: #525252;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -69,6 +166,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* Fun font for headings */
@@ -89,12 +187,12 @@ h1, h2, h3 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--neon-purple);
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-pink);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Global animations */
@@ -263,4 +361,35 @@ h1, h2, h3 {
 .page-exit-active {
   opacity: 0;
   transition: opacity var(--transition-fast);
+}
+
+/* Light theme specific adjustments */
+[data-theme="light"] .card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .input,
+[data-theme="light"] .select {
+  border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .input:focus,
+[data-theme="light"] .select:focus {
+  border-color: var(--neon-purple);
+}
+
+[data-theme="light"] .btn-secondary {
+  border-color: var(--neon-purple);
+  background: white;
+}
+
+/* Blue theme specific adjustments */
+[data-theme="blue"] .card {
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+/* Night theme specific adjustments */
+[data-theme="night"] .card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }

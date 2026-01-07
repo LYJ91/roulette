@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store/useStore';
+import { AlertModal } from '../common';
 import styles from './StudentManager.module.css';
 
 export function StudentManager() {
@@ -17,6 +18,10 @@ export function StudentManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editPoints, setEditPoints] = useState('');
+  const [editingPointsId, setEditingPointsId] = useState<string | null>(null);
+  const [inlinePoints, setInlinePoints] = useState('');
+  const [deleteModal, setDeleteModal] = useState<{ id: string; name: string } | null>(null);
+  const [alertModal, setAlertModal] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   const filteredStudents = useMemo(() => {
     if (!selectedClassId) return students;
@@ -37,11 +42,11 @@ export function StudentManager() {
 
   const handleAddStudent = () => {
     if (!selectedClassId) {
-      alert('반을 먼저 선택해주세요.');
+      setAlertModal({ message: '반을 먼저 선택해주세요.', type: 'warning' });
       return;
     }
     if (!newStudentName.trim()) {
-      alert('학생 이름을 입력해주세요.');
+      setAlertModal({ message: '학생 이름을 입력해주세요.', type: 'warning' });
       return;
     }
     const points = parseInt(newStudentPoints) || 0;
@@ -69,10 +74,39 @@ export function StudentManager() {
     setEditingId(null);
   };
 
-  const handleRemoveStudent = (id: string, name: string) => {
-    if (confirm(`${name} 학생을 삭제하시겠습니까?`)) {
-      removeStudent(id);
+  // 인라인 포인트 편집
+  const handleStartInlinePointsEdit = (student: typeof students[0]) => {
+    setEditingPointsId(student.id);
+    setInlinePoints(student.points.toString());
+  };
+
+  const handleSaveInlinePoints = (studentId: string) => {
+    const newPoints = parseInt(inlinePoints) || 0;
+    updateStudent(studentId, { points: newPoints });
+    setEditingPointsId(null);
+  };
+
+  const handleInlinePointsKeyDown = (e: React.KeyboardEvent, studentId: string) => {
+    if (e.key === 'Enter') {
+      handleSaveInlinePoints(studentId);
+    } else if (e.key === 'Escape') {
+      setEditingPointsId(null);
     }
+  };
+
+  const handleRemoveStudent = (id: string, name: string) => {
+    setDeleteModal({ id, name });
+  };
+
+  const confirmDelete = () => {
+    if (deleteModal) {
+      removeStudent(deleteModal.id);
+      setDeleteModal(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModal(null);
   };
 
   const getClassName = (classId: string) => {
@@ -265,7 +299,26 @@ export function StudentManager() {
                     ) : (
                       <>
                         <span className={styles.cellName}>{student.name}</span>
-                        <span className={styles.cellPoints}>{student.points}점</span>
+                        {editingPointsId === student.id ? (
+                          <input
+                            type="number"
+                            className={`input ${styles.inlinePointsInput}`}
+                            value={inlinePoints}
+                            onChange={(e) => setInlinePoints(e.target.value)}
+                            onKeyDown={(e) => handleInlinePointsKeyDown(e, student.id)}
+                            onBlur={() => handleSaveInlinePoints(student.id)}
+                            autoFocus
+                            min="0"
+                          />
+                        ) : (
+                          <span 
+                            className={styles.cellPointsEditable}
+                            onClick={() => handleStartInlinePointsEdit(student)}
+                            title="클릭하여 수정"
+                          >
+                            {student.points}점
+                          </span>
+                        )}
                         <span
                           className={styles.pointBadge}
                           style={{ background: badge.color }}
@@ -297,6 +350,50 @@ export function StudentManager() {
           </div>
         )}
       </motion.div>
+
+      {/* 삭제 확인 모달 */}
+      <AnimatePresence>
+        {deleteModal && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={cancelDelete}
+          >
+            <motion.div
+              className={styles.modalContent}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalIcon}>⚠️</div>
+              <h3 className={styles.modalTitle}>학생 삭제</h3>
+              <p className={styles.modalMessage}>
+                <span className={styles.modalName}>{deleteModal.name}</span> 학생을 
+                정말 삭제하시겠습니까?
+              </p>
+              <div className={styles.modalActions}>
+                <button className={styles.modalCancelBtn} onClick={cancelDelete}>
+                  취소
+                </button>
+                <button className={styles.modalDeleteBtn} onClick={confirmDelete}>
+                  삭제
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Alert 모달 */}
+      <AlertModal
+        isOpen={!!alertModal}
+        message={alertModal?.message || ''}
+        type={alertModal?.type || 'info'}
+        onClose={() => setAlertModal(null)}
+      />
     </div>
   );
 }

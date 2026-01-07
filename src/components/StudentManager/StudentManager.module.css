@@ -57,6 +57,16 @@
 
 .pointsInput {
   width: 80px;
+  text-align: center;
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+  -moz-appearance: textfield;
+}
+
+.pointsInput::-webkit-outer-spin-button,
+.pointsInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .pointsLabel {
@@ -153,6 +163,129 @@
   color: var(--neon-cyan);
 }
 
+.cellPointsEditable {
+  font-family: 'Jua', sans-serif;
+  color: var(--neon-cyan);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.cellPointsEditable:hover {
+  background: rgba(0, 245, 212, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.3);
+}
+
+.inlinePointsInput {
+  width: 70px;
+  padding: 8px 12px;
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--neon-cyan);
+  background: var(--bg-secondary);
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
+  -moz-appearance: textfield;
+}
+
+.inlinePointsInput::-webkit-outer-spin-button,
+.inlinePointsInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.inlinePointsInput:focus {
+  outline: none;
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.5);
+}
+
+/* 삭제 확인 모달 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 400px;
+  width: 90%;
+  border: 2px solid var(--neon-pink);
+  box-shadow: 0 0 40px rgba(255, 0, 110, 0.3);
+  text-align: center;
+}
+
+.modalIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.modalTitle {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.modalMessage {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+.modalName {
+  color: var(--neon-cyan);
+  font-weight: bold;
+}
+
+.modalActions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.modalCancelBtn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--bg-secondary);
+  border: 1px solid var(--text-muted);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'Jua', sans-serif;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modalCancelBtn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.modalDeleteBtn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--neon-pink);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-family: 'Jua', sans-serif;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
+}
+
+.modalDeleteBtn:hover {
+  background: #ff3385;
+  box-shadow: 0 0 25px rgba(255, 0, 110, 0.6);
+}
+
 .pointBadge {
   padding: 2px 8px;
   border-radius: var(--radius-full);
@@ -170,6 +303,13 @@
 .editInput {
   padding: var(--space-xs) var(--space-sm);
   font-size: 0.9rem;
+  -moz-appearance: textfield;
+}
+
+.editInput::-webkit-outer-spin-button,
+.editInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .editBtn,

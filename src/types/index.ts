@@ -27,12 +27,14 @@ export interface DrawResult {
 }
 
 export type AnimationStyle = 'lottery' | 'pinball';
+export type ThemeMode = 'neon' | 'light' | 'blue' | 'night';
 
 export interface AppState {
   classes: Class[];
   students: Student[];
   pointRanges: PointRange[];
   animationStyle: AnimationStyle;
+  themeMode: ThemeMode;
   
   // Class actions
   addClass: (grade: number, classNumber: number) => void;
@@ -48,6 +50,9 @@ export interface AppState {
   
   // Animation style
   setAnimationStyle: (style: AnimationStyle) => void;
+  
+  // Theme mode
+  setThemeMode: (mode: ThemeMode) => void;
   
   // Utils
   getStudentsByRange: (rangeId: string) => Student[];

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import type { AppState, Class, Student, PointRange, AnimationStyle } from '../types';
+import type { AppState, Class, Student, PointRange, AnimationStyle, ThemeMode } from '../types';
 
 const DEFAULT_POINT_RANGES: PointRange[] = [
   { id: 'range-1', label: '브론즈', min: 0, max: 15, winnersCount: 2 },
@@ -16,6 +16,7 @@ export const useStore = create<AppState>()(
       students: [],
       pointRanges: DEFAULT_POINT_RANGES,
       animationStyle: 'lottery' as AnimationStyle,
+      themeMode: 'neon' as ThemeMode,
 
       // Class actions
       addClass: (grade: number, classNumber: number) => {
@@ -72,6 +73,12 @@ export const useStore = create<AppState>()(
       // Animation style
       setAnimationStyle: (style: AnimationStyle) => {
         set({ animationStyle: style });
+      },
+
+      // Theme mode
+      setThemeMode: (mode: ThemeMode) => {
+        set({ themeMode: mode });
+        document.documentElement.setAttribute('data-theme', mode);
       },
 
       // Utils

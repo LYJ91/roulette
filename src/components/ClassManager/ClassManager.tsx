@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store/useStore';
+import { AlertModal } from '../common';
 import styles from './ClassManager.module.css';
 
 export function ClassManager() {
@@ -11,6 +12,8 @@ export function ClassManager() {
 
   const [selectedGrade, setSelectedGrade] = useState<number>(4);
   const [classNumber, setClassNumber] = useState<string>('');
+  const [deleteModal, setDeleteModal] = useState<{ id: string; name: string; studentCount: number } | null>(null);
+  const [alertModal, setAlertModal] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   const handleAddClass = () => {
     const num = parseInt(classNumber);
@@ -21,7 +24,7 @@ export function ClassManager() {
       (c) => c.grade === selectedGrade && c.classNumber === num
     );
     if (exists) {
-      alert('이미 존재하는 반입니다.');
+      setAlertModal({ message: '이미 존재하는 반입니다.', type: 'warning' });
       return;
     }
     
@@ -31,13 +34,18 @@ export function ClassManager() {
 
   const handleRemoveClass = (id: string, name: string) => {
     const studentCount = students.filter((s) => s.classId === id).length;
-    const message = studentCount > 0
-      ? `${name}에 ${studentCount}명의 학생이 있습니다. 정말 삭제하시겠습니까?`
-      : `${name}을(를) 삭제하시겠습니까?`;
-    
-    if (confirm(message)) {
-      removeClass(id);
+    setDeleteModal({ id, name, studentCount });
+  };
+
+  const confirmDelete = () => {
+    if (deleteModal) {
+      removeClass(deleteModal.id);
+      setDeleteModal(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModal(null);
   };
 
   const getStudentCount = (classId: string) => {
@@ -155,6 +163,55 @@ export function ClassManager() {
           </motion.div>
         ))}
       </div>
+
+      {/* 삭제 확인 모달 */}
+      <AnimatePresence>
+        {deleteModal && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={cancelDelete}
+          >
+            <motion.div
+              className={styles.modalContent}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalIcon}>⚠️</div>
+              <h3 className={styles.modalTitle}>반 삭제</h3>
+              <p className={styles.modalMessage}>
+                <span className={styles.modalName}>{deleteModal.name}</span>을(를) 
+                정말 삭제하시겠습니까?
+              </p>
+              {deleteModal.studentCount > 0 && (
+                <p className={styles.modalWarning}>
+                  ⚠️ {deleteModal.studentCount}명의 학생이 함께 삭제됩니다!
+                </p>
+              )}
+              <div className={styles.modalActions}>
+                <button className={styles.modalCancelBtn} onClick={cancelDelete}>
+                  취소
+                </button>
+                <button className={styles.modalDeleteBtn} onClick={confirmDelete}>
+                  삭제
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Alert 모달 */}
+      <AlertModal
+        isOpen={!!alertModal}
+        message={alertModal?.message || ''}
+        type={alertModal?.type || 'info'}
+        onClose={() => setAlertModal(null)}
+      />
     </div>
   );
 }

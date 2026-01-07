@@ -70,6 +70,16 @@
 
 .classInput {
   width: 120px;
+  text-align: center;
+  font-family: 'Jua', sans-serif;
+  font-size: 1rem;
+  -moz-appearance: textfield;
+}
+
+.classInput::-webkit-outer-spin-button,
+.classInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .classList {
@@ -145,4 +155,95 @@
   text-align: center;
   padding: var(--space-lg);
   grid-column: 1 / -1;
+}
+
+/* 삭제 확인 모달 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 400px;
+  width: 90%;
+  border: 2px solid var(--neon-pink);
+  box-shadow: 0 0 40px rgba(255, 0, 110, 0.3);
+  text-align: center;
+}
+
+.modalIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.modalTitle {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.modalMessage {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+.modalName {
+  color: var(--neon-cyan);
+  font-weight: bold;
+}
+
+.modalWarning {
+  color: var(--neon-orange);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-lg);
+}
+
+.modalActions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.modalCancelBtn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--bg-secondary);
+  border: 1px solid var(--text-muted);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'Jua', sans-serif;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modalCancelBtn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.modalDeleteBtn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--neon-pink);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-family: 'Jua', sans-serif;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
+}
+
+.modalDeleteBtn:hover {
+  background: #ff3385;
+  box-shadow: 0 0 25px rgba(255, 0, 110, 0.6);
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Student } from '../../types';
 import { shuffleArray, NEON_COLORS } from '../../utils/random';
+import { AlertModal } from '../common';
 import styles from './LotteryAnimation.module.css';
 
 interface Ball {
@@ -41,6 +42,7 @@ export function LotteryAnimation({ students, winnersCount, onComplete, onStart }
   const [phase, setPhase] = useState<'idle' | 'spinning' | 'exiting' | 'result'>('idle');
   const [exitingBall, setExitingBall] = useState<{ ball: Ball; progress: number } | null>(null);
   const [statusText, setStatusText] = useState('');
+  const [alertModal, setAlertModal] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   // 공 생성
   const createBalls = useCallback((studentList: Student[]): Ball[] => {
@@ -235,7 +237,7 @@ export function LotteryAnimation({ students, winnersCount, onComplete, onStart }
   // 시작
   const handleStart = () => {
     if (students.length < winnersCount) {
-      alert(`최소 ${winnersCount}명의 학생이 필요합니다.`);
+      setAlertModal({ message: `최소 ${winnersCount}명의 학생이 필요합니다.`, type: 'warning' });
       return;
     }
     
@@ -442,6 +444,14 @@ export function LotteryAnimation({ students, winnersCount, onComplete, onStart }
           이 구간에 해당하는 학생이 없습니다
         </div>
       )}
+
+      {/* Alert 모달 */}
+      <AlertModal
+        isOpen={!!alertModal}
+        message={alertModal?.message || ''}
+        type={alertModal?.type || 'info'}
+        onClose={() => setAlertModal(null)}
+      />
     </div>
   );
 }
