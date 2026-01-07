@@ -6,8 +6,9 @@ import styles from './RangeSettings.module.css';
 export function RangeSettings() {
   const pointRanges = useStore((state) => state.pointRanges);
   const updatePointRange = useStore((state) => state.updatePointRange);
-  const animationStyle = useStore((state) => state.animationStyle);
-  const setAnimationStyle = useStore((state) => state.setAnimationStyle);
+  // 핀볼 숨김 처리로 사용 안함
+  // const animationStyle = useStore((state) => state.animationStyle);
+  // const setAnimationStyle = useStore((state) => state.setAnimationStyle);
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState({
@@ -73,7 +74,8 @@ export function RangeSettings() {
         </p>
       </motion.div>
 
-      <motion.div
+      {/* 애니메이션 스타일 선택 - 현재 로또만 사용 */}
+      {/* <motion.div
         className={styles.section}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -101,7 +103,7 @@ export function RangeSettings() {
             <span className={styles.styleDesc}>공이 떨어지며 추첨</span>
           </button>
         </div>
-      </motion.div>
+      </motion.div> */}
 
       <motion.div
         className={styles.section}
@@ -219,7 +221,7 @@ export function RangeSettings() {
         <ul className={styles.tipList}>
           <li>점수 구간이 겹치지 않도록 설정하세요</li>
           <li>당첨자 수는 해당 구간 학생 수보다 적어야 합니다</li>
-          <li>로또 스타일은 화려한 애니메이션이, 핀볼 스타일은 스릴있는 연출이 특징입니다</li>
+          <li>추첨 시 공이 튜브를 통해 나오며 당첨자가 선정됩니다</li>
         </ul>
       </motion.div>
     </div>

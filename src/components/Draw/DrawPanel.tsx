@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '../../store/useStore';
 import { useStudentsByRange } from '../../hooks/useStudentsByRange';
 import { LotteryAnimation } from './LotteryAnimation';
-import { PinballAnimation } from './PinballAnimation';
+// import { PinballAnimation } from './PinballAnimation'; // 핀볼 숨김 처리
 import { WinnerDisplay } from './WinnerDisplay';
 import type { Student, PointRange } from '../../types';
 import styles from './DrawPanel.module.css';
@@ -14,7 +14,6 @@ interface Props {
 }
 
 export function DrawPanel({ range, colorIndex }: Props) {
-  const animationStyle = useStore((state) => state.animationStyle);
   const classes = useStore((state) => state.classes);
   const { getStudentsForRange } = useStudentsByRange();
   
@@ -71,21 +70,12 @@ export function DrawPanel({ range, colorIndex }: Props) {
           </div>
         ) : (
           <div className={styles.animationContainer}>
-            {animationStyle === 'lottery' ? (
-              <LotteryAnimation
-                students={students}
-                winnersCount={range.winnersCount}
-                onComplete={handleComplete}
-                onStart={handleStart}
-              />
-            ) : (
-              <PinballAnimation
-                students={students}
-                winnersCount={range.winnersCount}
-                onComplete={handleComplete}
-                onStart={handleStart}
-              />
-            )}
+            <LotteryAnimation
+              students={students}
+              winnersCount={range.winnersCount}
+              onComplete={handleComplete}
+              onStart={handleStart}
+            />
           </div>
         )}
       </div>
