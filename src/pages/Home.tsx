@@ -37,7 +37,7 @@ export function Home() {
           행운의 룰렛
         </h1>
         <p className={styles.subtitle}>
-          공정하고 재미있는 학생 추첨 시스템
+          초등부 달란트 추첨 시스템
         </p>
       </motion.div>
 
