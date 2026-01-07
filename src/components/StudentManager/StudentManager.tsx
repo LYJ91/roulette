@@ -6,6 +6,7 @@ import styles from './StudentManager.module.css';
 export function StudentManager() {
   const classes = useStore((state) => state.classes);
   const students = useStore((state) => state.students);
+  const pointRanges = useStore((state) => state.pointRanges);
   const addStudent = useStore((state) => state.addStudent);
   const updateStudent = useStore((state) => state.updateStudent);
   const removeStudent = useStore((state) => state.removeStudent);
@@ -80,9 +81,18 @@ export function StudentManager() {
   };
 
   const getPointBadge = (points: number) => {
-    if (points <= 15) return { label: '브론즈', color: 'var(--neon-orange)' };
-    if (points <= 30) return { label: '실버', color: 'var(--neon-blue)' };
-    return { label: '골드', color: 'var(--neon-yellow)' };
+    const colors = ['var(--neon-orange)', 'var(--neon-blue)', 'var(--neon-yellow)'];
+    
+    // 실제 구간 설정에서 해당하는 구간 찾기
+    for (let i = 0; i < pointRanges.length; i++) {
+      const range = pointRanges[i];
+      if (points >= range.min && points <= range.max) {
+        return { label: range.label, color: colors[i % colors.length] };
+      }
+    }
+    
+    // 어떤 구간에도 해당하지 않을 경우
+    return { label: '미분류', color: 'var(--text-muted)' };
   };
 
   return (

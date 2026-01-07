@@ -6,8 +6,6 @@ import styles from './Draw.module.css';
 
 export function Draw() {
   const pointRanges = useStore((state) => state.pointRanges);
-  const animationStyle = useStore((state) => state.animationStyle);
-  const setAnimationStyle = useStore((state) => state.setAnimationStyle);
   const [selectedRangeId, setSelectedRangeId] = useState<string | null>(null);
 
   const selectedRange = selectedRangeId 
@@ -30,26 +28,7 @@ export function Draw() {
         </p>
       </motion.div>
 
-      <motion.div
-        className={styles.styleToggle}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
-        <span className={styles.styleLabel}>애니메이션:</span>
-        <button
-          className={`${styles.styleBtn} ${animationStyle === 'lottery' ? styles.active : ''}`}
-          onClick={() => setAnimationStyle('lottery')}
-        >
-          🎰 로또
-        </button>
-        <button
-          className={`${styles.styleBtn} ${animationStyle === 'pinball' ? styles.active : ''}`}
-          onClick={() => setAnimationStyle('pinball')}
-        >
-          🎯 핀볼
-        </button>
-      </motion.div>
+      {/* 애니메이션 선택 숨김 - 로또만 사용 */}
 
       {!selectedRange ? (
         <motion.div
