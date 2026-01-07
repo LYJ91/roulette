@@ -1,0 +1,72 @@
+.panel {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  border: 2px solid var(--accent-color, var(--neon-purple));
+  box-shadow: 0 0 30px rgba(131, 56, 236, 0.1);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid rgba(131, 56, 236, 0.2);
+}
+
+.rangeBadge {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.75rem;
+  color: var(--accent-color, var(--neon-purple));
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(131, 56, 236, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.rangeInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.rangePoints {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.studentCount {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.winnersTarget {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  color: var(--neon-cyan);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0, 245, 212, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.animationContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  width: 100%;
+}

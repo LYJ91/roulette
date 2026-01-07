@@ -1,0 +1,146 @@
+.home {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.hero {
+  text-align: center;
+  padding: var(--space-2xl) 0;
+}
+
+.title {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  background: var(--gradient-pink-purple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.titleIcon {
+  font-size: 3.5rem;
+  -webkit-text-fill-color: initial;
+  animation: float 3s ease-in-out infinite;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.statCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  border: 1px solid rgba(131, 56, 236, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.statCard:hover {
+  border-color: var(--neon-purple);
+  box-shadow: var(--glow-purple);
+}
+
+.statIcon {
+  font-size: 2.5rem;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-family: 'Jua', sans-serif;
+  font-size: 2rem;
+  color: var(--neon-cyan);
+}
+
+.statLabel {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.rangeSection {
+  margin-bottom: var(--space-2xl);
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-lg);
+  color: var(--text-primary);
+}
+
+.rangeCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+}
+
+.rangeCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 2px solid var(--accent-color, var(--neon-purple));
+  position: relative;
+  overflow: hidden;
+}
+
+.rangeCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-color, var(--neon-purple));
+}
+
+.rangeBadge {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.25rem;
+  color: var(--accent-color, var(--neon-purple));
+  margin-bottom: var(--space-md);
+}
+
+.rangeInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rangePoints {
+  color: var(--text-secondary);
+}
+
+.rangeCount {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.drawBtn {
+  font-size: 1.25rem;
+  padding: var(--space-md) var(--space-2xl);
+}

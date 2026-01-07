@@ -1,0 +1,230 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: var(--space-xl);
+}
+
+.title {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.description {
+  color: var(--text-secondary);
+}
+
+.addForm {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  border: 1px solid rgba(131, 56, 236, 0.2);
+}
+
+.formTitle {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-lg);
+  color: var(--neon-cyan);
+}
+
+.formRow {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.classSelect {
+  min-width: 150px;
+}
+
+.nameInput {
+  flex: 1;
+  min-width: 150px;
+}
+
+.pointsInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.pointsInput {
+  width: 80px;
+}
+
+.pointsLabel {
+  color: var(--text-secondary);
+}
+
+.filterSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  color: var(--text-secondary);
+}
+
+.studentCount {
+  margin-left: auto;
+  color: var(--neon-cyan);
+  font-family: 'Jua', sans-serif;
+}
+
+.studentList {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(131, 56, 236, 0.2);
+  overflow: hidden;
+}
+
+.empty {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-secondary);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+.emptyHint {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+}
+
+.table {
+  width: 100%;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px 80px 100px;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-secondary);
+  font-family: 'Jua', sans-serif;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px 80px 100px;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  align-items: center;
+  border-bottom: 1px solid rgba(131, 56, 236, 0.1);
+  transition: background var(--transition-fast);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background: rgba(131, 56, 236, 0.05);
+}
+
+.cellClass {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.cellName {
+  font-weight: 500;
+}
+
+.cellPoints {
+  font-family: 'Jua', sans-serif;
+  color: var(--neon-cyan);
+}
+
+.pointBadge {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--bg-primary);
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.editInput {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.9rem;
+}
+
+.editBtn,
+.saveBtn,
+.cancelBtn {
+  background: var(--bg-hover);
+  border: none;
+  font-size: 0.875rem;
+}
+
+.saveBtn {
+  color: var(--neon-green);
+}
+
+.cancelBtn {
+  color: var(--neon-pink);
+}
+
+@media (max-width: 768px) {
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+  
+  .tableHeader {
+    display: none;
+  }
+  
+  .tableRow {
+    display: flex;
+    flex-wrap: wrap;
+    padding: var(--space-md);
+  }
+  
+  .cellClass {
+    width: 100%;
+    order: 1;
+  }
+  
+  .cellName {
+    order: 2;
+    flex: 1;
+  }
+  
+  .cellPoints {
+    order: 3;
+  }
+  
+  .pointBadge {
+    order: 4;
+  }
+  
+  .actions {
+    order: 5;
+    margin-left: auto;
+  }
+}

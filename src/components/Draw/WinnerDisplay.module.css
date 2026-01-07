@@ -1,0 +1,80 @@
+.container {
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  border: 2px solid var(--neon-yellow);
+  box-shadow: 
+    0 0 40px rgba(255, 190, 11, 0.3),
+    inset 0 0 60px rgba(255, 190, 11, 0.1);
+  overflow: hidden;
+  text-align: center;
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confettiPiece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.trophy {
+  font-size: 4rem;
+  margin-bottom: var(--space-md);
+  display: inline-block;
+}
+
+.title {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-xl);
+  background: var(--gradient-orange-yellow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.winnerCards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.winnerCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 1px solid rgba(255, 190, 11, 0.3);
+}
+
+.winnerIcon {
+  font-size: 2rem;
+}
+
+.winnerInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.winnerClass {
+  font-size: 0.875rem;
+  color: var(--neon-cyan);
+}
+
+.winnerName {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
