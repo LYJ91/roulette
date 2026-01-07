@@ -9,12 +9,20 @@
   z-index: 100;
 }
 
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
 .logo {
   display: flex;
   align-items: center;
   gap: var(--space-md);
   text-decoration: none;
   color: var(--text-primary);
+  min-width: 0;
 }
 
 .logoIcon {
@@ -30,4 +38,40 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: 0 0 30px rgba(131, 56, 236, 0.5);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: var(--space-sm) var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .logoIcon {
+    font-size: 2rem;
+  }
+
+  .logoText {
+    font-size: 1.35rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: var(--space-sm);
+  }
+
+  .logo {
+    gap: var(--space-sm);
+  }
+
+  .logoIcon {
+    font-size: 1.8rem;
+  }
+
+  .logoText {
+    font-size: 1.15rem;
+  }
 }

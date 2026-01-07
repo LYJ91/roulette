@@ -23,7 +23,9 @@ export function Header() {
           행운의 룰렛
         </motion.span>
       </Link>
-      <ThemeSwitcher />
+      <div className={styles.right}>
+        <ThemeSwitcher />
+      </div>
     </header>
   );
 }

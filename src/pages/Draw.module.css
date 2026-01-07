@@ -169,3 +169,59 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .rangeCards {
+    gap: var(--space-lg);
+  }
+
+  .rangeCard {
+    padding: var(--space-xl);
+  }
+
+  .cardIcon {
+    font-size: 3.25rem;
+  }
+
+  .cardLabel {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.7rem;
+    gap: var(--space-sm);
+  }
+
+  .rangeCards {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .rangeCard {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .cardIcon {
+    font-size: 2.8rem;
+  }
+
+  .cardLabel {
+    font-size: 1.4rem;
+  }
+
+  .cardPoints {
+    font-size: 1.05rem;
+  }
+}

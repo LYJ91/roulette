@@ -6,43 +6,6 @@
   width: 200px;
 }
 
-@media (max-width: 768px) {
-  .nav {
-    width: 100%;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid rgba(131, 56, 236, 0.2);
-    padding: var(--space-md);
-  }
-  
-  .navList {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .navLink {
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-  }
-  
-  .navLink::before {
-    display: none;
-  }
-  
-  .navLink.active {
-    background: var(--gradient-pink-purple);
-  }
-  
-  .label {
-    display: none;
-  }
-  
-  .icon {
-    font-size: 1.5rem;
-  }
-}
-
 .navList {
   list-style: none;
   display: flex;
@@ -103,4 +66,83 @@
 
 .label {
   font-family: 'Jua', 'Noto Sans KR', sans-serif;
+}
+
+/* Mobile: compact "tab bar" style (icons + labels) */
+@media (max-width: 768px) {
+  .nav {
+    width: 100%;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(131, 56, 236, 0.2);
+    padding: var(--space-sm) var(--space-md);
+    background: color-mix(in srgb, var(--bg-secondary) 75%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  
+  .navList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 6px;
+    align-items: stretch;
+  }
+  
+  .navLink {
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 8px;
+    border-radius: var(--radius-lg);
+    justify-content: center;
+    background: rgba(131, 56, 236, 0.08);
+    border: 1px solid rgba(131, 56, 236, 0.18);
+  }
+  
+  .navLink::before {
+    display: none;
+  }
+  
+  .navLink:hover {
+    background: rgba(131, 56, 236, 0.12);
+  }
+  
+  .navLink.active {
+    background: var(--gradient-pink-purple);
+    border-color: transparent;
+    box-shadow: var(--glow-purple);
+  }
+  
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* In light theme, labels shouldn't force white */
+  [data-theme="light"] .label {
+    color: var(--text-primary);
+  }
+  
+  .icon {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding: var(--space-sm);
+  }
+
+  .navList {
+    gap: 5px;
+  }
+
+  .navLink {
+    padding: 9px 6px;
+    border-radius: var(--radius-md);
+  }
+
+  .label {
+    font-size: 0.72rem;
+  }
 }

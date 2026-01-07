@@ -144,3 +144,58 @@
   font-size: 1.25rem;
   padding: var(--space-md) var(--space-2xl);
 }
+
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--space-xl) 0;
+  }
+
+  .title {
+    font-size: 2.25rem;
+    flex-wrap: wrap;
+  }
+
+  .titleIcon {
+    font-size: 2.75rem;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: var(--space-lg) 0;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    gap: var(--space-sm);
+  }
+
+  .titleIcon {
+    font-size: 2.2rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .statCard {
+    padding: var(--space-md);
+  }
+
+  .statIcon {
+    font-size: 2rem;
+  }
+
+  .statValue {
+    font-size: 1.6rem;
+  }
+
+  .drawBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

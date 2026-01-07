@@ -58,3 +58,28 @@
     display: inline;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    gap: var(--space-sm);
+  }
+
+  .label {
+    display: none;
+  }
+
+  .buttons {
+    gap: 2px;
+    padding: 2px;
+    border-radius: var(--radius-md);
+  }
+
+  .themeBtn {
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .icon {
+    font-size: 1rem;
+  }
+}
