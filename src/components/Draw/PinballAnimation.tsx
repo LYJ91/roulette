@@ -1,28 +1,31 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Student } from '../../types';
-import { NEON_COLORS } from '../../utils/random';
+import { NEON_COLORS, shuffleArray } from '../../utils/random';
 import styles from './PinballAnimation.module.css';
 
-interface Peg {
-  x: number;
-  y: number;
-  hit: boolean;
-}
-
 interface Ball {
+  id: string;
+  name: string;
+  student: Student;
   x: number;
   y: number;
   vx: number;
   vy: number;
-  active: boolean;
+  color: string;
+  finished: boolean;
+  finishOrder: number;
 }
 
-interface Slot {
-  student: Student;
+interface Peg {
   x: number;
-  width: number;
-  selected: boolean;
+  y: number;
+}
+
+interface Explosion {
+  id: number;
+  x: number;
+  y: number;
 }
 
 interface Props {
@@ -32,40 +35,51 @@ interface Props {
   onStart: () => void;
 }
 
-const BOARD_WIDTH = 400;
-const BOARD_HEIGHT = 500;
-const PEG_RADIUS = 8;
-const BALL_RADIUS = 12;
-const SLOT_HEIGHT = 60;
+const BOARD_WIDTH = 380;
+const BOARD_HEIGHT = 700;
+const BALL_RADIUS = 14;
+const PEG_RADIUS = 6;
+const EXIT_WIDTH = 50;
+const EXIT_Y = BOARD_HEIGHT - 40;
 
 export function PinballAnimation({ students, winnersCount, onComplete, onStart }: Props) {
-  const animationRef = useRef<number | undefined>(undefined);
-  const [ball, setBall] = useState<Ball | null>(null);
+  const animationRef = useRef<number | null>(null);
+  const ballsRef = useRef<Ball[]>([]);
+  const finishCountRef = useRef(0);
+  const explosionTimerRef = useRef<number | null>(null);
+  
+  const [displayBalls, setDisplayBalls] = useState<Ball[]>([]);
   const [pegs, setPegs] = useState<Peg[]>([]);
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [winners, setWinners] = useState<Student[]>([]);
   const [phase, setPhase] = useState<'idle' | 'dropping' | 'complete'>('idle');
-  const [currentWinnerIndex, setCurrentWinnerIndex] = useState(0);
-  const [hitPegs, setHitPegs] = useState<Set<number>>(new Set());
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
+  const [explosions, setExplosions] = useState<Explosion[]>([]);
+  const [finishedBalls, setFinishedBalls] = useState<Ball[]>([]);
+  const [statusText, setStatusText] = useState('');
 
-  // Generate pegs in a triangular pattern
+  // Generate pegs in a funnel pattern
   const generatePegs = useCallback(() => {
     const newPegs: Peg[] = [];
-    const rows = 8;
-    const startY = 80;
-    const rowSpacing = 45;
+    const rows = 18;
+    const startY = 100;
+    const rowSpacing = 32;
     
     for (let row = 0; row < rows; row++) {
-      const pegsInRow = row + 3;
-      const rowWidth = (pegsInRow - 1) * 45;
-      const startX = (BOARD_WIDTH - rowWidth) / 2;
+      // Funnel shape: wider at top, narrower at bottom
+      const progress = row / rows;
+      const maxWidth = BOARD_WIDTH - 60;
+      const minWidth = EXIT_WIDTH + 40;
+      const rowWidth = maxWidth - (maxWidth - minWidth) * progress * 0.8;
+      
+      const pegsInRow = Math.max(3, Math.floor(rowWidth / 35));
+      const actualRowWidth = (pegsInRow - 1) * 35;
+      const startX = (BOARD_WIDTH - actualRowWidth) / 2;
+      
+      // Offset every other row
+      const offset = row % 2 === 0 ? 0 : 17.5;
       
       for (let col = 0; col < pegsInRow; col++) {
         newPegs.push({
-          x: startX + col * 45,
+          x: startX + col * 35 + offset,
           y: startY + row * rowSpacing,
-          hit: false,
         });
       }
     }
@@ -73,195 +87,247 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
     setPegs(newPegs);
   }, []);
 
-  // Generate slots based on students
-  const generateSlots = useCallback(() => {
-    if (students.length === 0) return;
+  // Initialize balls for all students
+  const initializeBalls = useCallback(() => {
+    if (students.length === 0) return [];
     
-    const slotWidth = Math.min(60, (BOARD_WIDTH - 20) / students.length);
-    const totalWidth = slotWidth * students.length;
-    const startX = (BOARD_WIDTH - totalWidth) / 2;
-    
-    const shuffled = [...students].sort(() => Math.random() - 0.5);
-    
-    const newSlots: Slot[] = shuffled.map((student, index) => ({
+    const shuffled = shuffleArray([...students]);
+    const balls: Ball[] = shuffled.map((student, i) => ({
+      id: student.id,
+      name: student.name,
       student,
-      x: startX + index * slotWidth,
-      width: slotWidth,
-      selected: false,
+      x: BOARD_WIDTH / 2 + (Math.random() - 0.5) * 100,
+      y: 30 + Math.random() * 30,
+      vx: (Math.random() - 0.5) * 2,
+      vy: Math.random() * 2,
+      color: NEON_COLORS[i % NEON_COLORS.length],
+      finished: false,
+      finishOrder: 0,
     }));
     
-    setSlots(newSlots);
+    return balls;
   }, [students]);
 
   useEffect(() => {
     generatePegs();
-    generateSlots();
-  }, [generatePegs, generateSlots]);
+  }, [generatePegs]);
 
-  // Create particle effect
-  const createParticles = useCallback((x: number, y: number, color: string) => {
-    const newParticles = Array.from({ length: 5 }, (_, i) => ({
-      id: Date.now() + i,
-      x,
-      y,
-      color,
-    }));
-    setParticles((prev) => [...prev, ...newParticles]);
-    setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => !newParticles.find((np) => np.id === p.id)));
-    }, 500);
-  }, []);
-
-  // Physics simulation for ball
-  const updateBallPhysics = useCallback((currentBall: Ball): Ball => {
-    const gravity = 0.3;
-    const friction = 0.98;
-    const bounce = 0.6;
+  // Create explosion effect
+  const createExplosion = useCallback(() => {
+    if (phase !== 'dropping') return;
     
-    let { x, y, vx, vy, active } = currentBall;
+    const explosionX = BOARD_WIDTH / 2 + (Math.random() - 0.5) * 150;
+    const explosionY = 200 + Math.random() * 300;
     
-    if (!active) return currentBall;
+    const newExplosion: Explosion = {
+      id: Date.now(),
+      x: explosionX,
+      y: explosionY,
+    };
     
-    // Apply gravity
-    vy += gravity;
+    setExplosions(prev => [...prev, newExplosion]);
     
-    // Apply velocity
-    x += vx;
-    y += vy;
-    
-    // Wall collision
-    if (x - BALL_RADIUS < 0) {
-      x = BALL_RADIUS;
-      vx = -vx * bounce;
-    }
-    if (x + BALL_RADIUS > BOARD_WIDTH) {
-      x = BOARD_WIDTH - BALL_RADIUS;
-      vx = -vx * bounce;
-    }
-    
-    // Peg collision
-    pegs.forEach((peg, index) => {
-      const dx = x - peg.x;
-      const dy = y - peg.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const minDist = BALL_RADIUS + PEG_RADIUS;
+    // Apply force to nearby balls
+    ballsRef.current = ballsRef.current.map(ball => {
+      if (ball.finished) return ball;
       
-      if (dist < minDist) {
-        // Collision response
+      const dx = ball.x - explosionX;
+      const dy = ball.y - explosionY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < 120) {
+        const force = (120 - dist) / 120 * 8;
         const angle = Math.atan2(dy, dx);
-        const overlap = minDist - dist;
-        
-        x += Math.cos(angle) * overlap;
-        y += Math.sin(angle) * overlap;
-        
-        // Reflect velocity
-        const normalX = dx / dist;
-        const normalY = dy / dist;
-        const dotProduct = vx * normalX + vy * normalY;
-        
-        vx = (vx - 2 * dotProduct * normalX) * bounce;
-        vy = (vy - 2 * dotProduct * normalY) * bounce;
-        
-        // Add some randomness
-        vx += (Math.random() - 0.5) * 2;
-        
-        // Mark peg as hit
-        if (!hitPegs.has(index)) {
-          setHitPegs((prev) => new Set([...prev, index]));
-          createParticles(peg.x, peg.y, NEON_COLORS[index % NEON_COLORS.length]);
-        }
+        return {
+          ...ball,
+          vx: ball.vx + Math.cos(angle) * force,
+          vy: ball.vy + Math.sin(angle) * force - 2,
+        };
       }
+      return ball;
     });
     
-    // Apply friction
-    vx *= friction;
-    
-    // Check if ball reached bottom
-    if (y > BOARD_HEIGHT - SLOT_HEIGHT) {
-      active = false;
-    }
-    
-    return { x, y, vx, vy, active };
-  }, [pegs, hitPegs, createParticles]);
+    // Remove explosion after animation
+    setTimeout(() => {
+      setExplosions(prev => prev.filter(e => e.id !== newExplosion.id));
+    }, 600);
+  }, [phase]);
 
-  // Animation loop
-  useEffect(() => {
-    if (phase !== 'dropping' || !ball) return;
+  // Physics simulation
+  const updatePhysics = useCallback(() => {
+    const gravity = 0.25;
+    const friction = 0.995;
+    const bounce = 0.65;
     
-    const animate = () => {
-      setBall((prev) => {
-        if (!prev) return null;
-        const updated = updateBallPhysics(prev);
+    let anyActive = false;
+    
+    ballsRef.current = ballsRef.current.map(ball => {
+      if (ball.finished) return ball;
+      
+      anyActive = true;
+      let { x, y, vx, vy } = ball;
+      
+      // Apply gravity
+      vy += gravity;
+      
+      // Apply velocity
+      x += vx;
+      y += vy;
+      
+      // Wall collision (funnel shape)
+      const progress = Math.min(1, y / BOARD_HEIGHT);
+      const maxWidth = BOARD_WIDTH - 40;
+      const minWidth = EXIT_WIDTH;
+      const currentWidth = maxWidth - (maxWidth - minWidth) * progress * 0.9;
+      const leftWall = (BOARD_WIDTH - currentWidth) / 2;
+      const rightWall = (BOARD_WIDTH + currentWidth) / 2;
+      
+      if (x - BALL_RADIUS < leftWall) {
+        x = leftWall + BALL_RADIUS;
+        vx = Math.abs(vx) * bounce;
+      }
+      if (x + BALL_RADIUS > rightWall) {
+        x = rightWall - BALL_RADIUS;
+        vx = -Math.abs(vx) * bounce;
+      }
+      
+      // Top wall
+      if (y - BALL_RADIUS < 20) {
+        y = 20 + BALL_RADIUS;
+        vy = Math.abs(vy) * bounce;
+      }
+      
+      // Peg collision
+      pegs.forEach(peg => {
+        const dx = x - peg.x;
+        const dy = y - peg.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const minDist = BALL_RADIUS + PEG_RADIUS;
         
-        if (!updated.active) {
-          // Ball reached bottom - determine winner
-          const winningSlot = slots.find(
-            (slot) => updated.x >= slot.x && updated.x < slot.x + slot.width
-          );
+        if (dist < minDist && dist > 0) {
+          const angle = Math.atan2(dy, dx);
+          const overlap = minDist - dist;
           
-          if (winningSlot) {
-            const newWinner = winningSlot.student;
-            
-            setWinners((prev) => [...prev, newWinner]);
-            setSlots((prevSlots) =>
-              prevSlots.map((s) =>
-                s.student.id === newWinner.id ? { ...s, selected: true } : s
-              )
-            );
-            
-            // Check if we need more winners
-            const nextWinnerIndex = currentWinnerIndex + 1;
-            if (nextWinnerIndex < winnersCount) {
-              setCurrentWinnerIndex(nextWinnerIndex);
-              // Drop another ball after delay
-              setTimeout(() => {
-                dropNewBall();
-                setHitPegs(new Set());
-              }, 1500);
-            } else {
-              // All winners selected
-              setTimeout(() => {
-                setPhase('complete');
-              }, 1000);
-            }
-          }
+          x += Math.cos(angle) * overlap;
+          y += Math.sin(angle) * overlap;
           
-          return null;
+          const normalX = dx / dist;
+          const normalY = dy / dist;
+          const dotProduct = vx * normalX + vy * normalY;
+          
+          vx = (vx - 2 * dotProduct * normalX) * bounce;
+          vy = (vy - 2 * dotProduct * normalY) * bounce;
+          
+          // Add randomness
+          vx += (Math.random() - 0.5) * 1.5;
         }
-        
-        return updated;
       });
       
-      if (ball?.active) {
+      // Ball-to-ball collision
+      ballsRef.current.forEach(other => {
+        if (other.id === ball.id || other.finished) return;
+        
+        const dx = x - other.x;
+        const dy = y - other.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const minDist = BALL_RADIUS * 2;
+        
+        if (dist < minDist && dist > 0) {
+          const angle = Math.atan2(dy, dx);
+          const overlap = (minDist - dist) / 2;
+          
+          x += Math.cos(angle) * overlap;
+          y += Math.sin(angle) * overlap;
+          
+          const normalX = dx / dist;
+          const normalY = dy / dist;
+          const relVx = vx - other.vx;
+          const relVy = vy - other.vy;
+          const dotProduct = relVx * normalX + relVy * normalY;
+          
+          if (dotProduct > 0) {
+            vx -= dotProduct * normalX * 0.5;
+            vy -= dotProduct * normalY * 0.5;
+          }
+        }
+      });
+      
+      // Apply friction
+      vx *= friction;
+      
+      // Check if ball reached exit
+      const exitLeft = (BOARD_WIDTH - EXIT_WIDTH) / 2;
+      const exitRight = (BOARD_WIDTH + EXIT_WIDTH) / 2;
+      
+      if (y > EXIT_Y && x > exitLeft && x < exitRight) {
+        finishCountRef.current += 1;
+        return {
+          ...ball,
+          x, y, vx, vy,
+          finished: true,
+          finishOrder: finishCountRef.current,
+        };
+      }
+      
+      return { ...ball, x, y, vx, vy };
+    });
+    
+    setDisplayBalls([...ballsRef.current]);
+    
+    // Update finished balls list
+    const newlyFinished = ballsRef.current.filter(b => b.finished);
+    if (newlyFinished.length > finishedBalls.length) {
+      setFinishedBalls(newlyFinished.sort((a, b) => a.finishOrder - b.finishOrder));
+    }
+    
+    return anyActive;
+  }, [pegs, finishedBalls.length]);
+
+  // Main animation loop
+  useEffect(() => {
+    if (phase !== 'dropping') return;
+    
+    const animate = () => {
+      const anyActive = updatePhysics();
+      
+      if (anyActive) {
         animationRef.current = requestAnimationFrame(animate);
+      } else {
+        // All balls finished
+        setPhase('complete');
       }
     };
     
     animationRef.current = requestAnimationFrame(animate);
     
+    // Explosion timer
+    explosionTimerRef.current = window.setInterval(() => {
+      createExplosion();
+    }, 1500);
+    
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (explosionTimerRef.current) clearInterval(explosionTimerRef.current);
     };
-  }, [phase, ball, updateBallPhysics, slots, currentWinnerIndex, winnersCount]);
+  }, [phase, updatePhysics, createExplosion]);
 
   // Notify parent when complete
   useEffect(() => {
-    if (phase === 'complete' && winners.length === winnersCount) {
+    if (phase !== 'complete') return;
+    if (finishedBalls.length === 0) return;
+    
+    // Winners are the LAST ones to finish
+    const sortedByFinish = [...finishedBalls].sort((a, b) => b.finishOrder - a.finishOrder);
+    const winners = sortedByFinish.slice(0, winnersCount).map(b => b.student);
+    
+    setStatusText('🎉 추첨 완료!');
+    
+    const timer = setTimeout(() => {
       onComplete(winners);
-    }
-  }, [phase, winners, winnersCount, onComplete]);
-
-  const dropNewBall = () => {
-    setBall({
-      x: BOARD_WIDTH / 2 + (Math.random() - 0.5) * 40,
-      y: 20,
-      vx: (Math.random() - 0.5) * 3,
-      vy: 0,
-      active: true,
-    });
-  };
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [phase, finishedBalls, winnersCount, onComplete]);
 
   const handleStart = () => {
     if (students.length < winnersCount) {
@@ -269,102 +335,146 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
       return;
     }
     
-    setWinners([]);
-    setCurrentWinnerIndex(0);
-    setHitPegs(new Set());
-    generateSlots();
+    // Reset
+    finishCountRef.current = 0;
+    const balls = initializeBalls();
+    ballsRef.current = balls;
+    setDisplayBalls(balls);
+    setFinishedBalls([]);
+    setExplosions([]);
+    setStatusText('🎯 레이스 시작!');
     setPhase('dropping');
-    dropNewBall();
     onStart();
   };
 
   const handleReset = () => {
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    if (explosionTimerRef.current) clearInterval(explosionTimerRef.current);
+    
+    finishCountRef.current = 0;
+    ballsRef.current = [];
+    setDisplayBalls([]);
+    setFinishedBalls([]);
+    setExplosions([]);
+    setStatusText('');
     setPhase('idle');
-    setWinners([]);
-    setBall(null);
-    setCurrentWinnerIndex(0);
-    setHitPegs(new Set());
-    setSlots((prev) => prev.map((s) => ({ ...s, selected: false })));
-    generateSlots();
   };
 
-  const slotColors = useMemo(() => 
-    students.map((_, i) => NEON_COLORS[i % NEON_COLORS.length]),
-    [students]
-  );
+  // Get winners (last to finish)
+  const getWinners = () => {
+    return [...finishedBalls]
+      .sort((a, b) => b.finishOrder - a.finishOrder)
+      .slice(0, winnersCount);
+  };
+
+  const winners = phase === 'complete' ? getWinners() : [];
 
   return (
     <div className={styles.container}>
       <div className={styles.board}>
-        {/* Neon border */}
-        <div className={styles.neonBorder} />
-        
+        {/* Funnel walls */}
+        <svg className={styles.funnelSvg} viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`}>
+          <defs>
+            <linearGradient id="wallGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="var(--neon-purple)" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="var(--neon-cyan)" stopOpacity="0.8" />
+            </linearGradient>
+          </defs>
+          {/* Left wall */}
+          <path
+            d={`M 20 20 
+                Q 10 ${BOARD_HEIGHT/2} ${(BOARD_WIDTH - EXIT_WIDTH) / 2} ${EXIT_Y}
+                L ${(BOARD_WIDTH - EXIT_WIDTH) / 2} ${BOARD_HEIGHT}
+                L 0 ${BOARD_HEIGHT}
+                L 0 0
+                L 20 0 Z`}
+            fill="url(#wallGradient)"
+            stroke="var(--neon-cyan)"
+            strokeWidth="2"
+          />
+          {/* Right wall */}
+          <path
+            d={`M ${BOARD_WIDTH - 20} 20 
+                Q ${BOARD_WIDTH - 10} ${BOARD_HEIGHT/2} ${(BOARD_WIDTH + EXIT_WIDTH) / 2} ${EXIT_Y}
+                L ${(BOARD_WIDTH + EXIT_WIDTH) / 2} ${BOARD_HEIGHT}
+                L ${BOARD_WIDTH} ${BOARD_HEIGHT}
+                L ${BOARD_WIDTH} 0
+                L ${BOARD_WIDTH - 20} 0 Z`}
+            fill="url(#wallGradient)"
+            stroke="var(--neon-cyan)"
+            strokeWidth="2"
+          />
+        </svg>
+
         {/* Pegs */}
         {pegs.map((peg, index) => (
-          <motion.div
+          <div
             key={index}
-            className={`${styles.peg} ${hitPegs.has(index) ? styles.pegHit : ''}`}
+            className={styles.peg}
             style={{
               left: peg.x - PEG_RADIUS,
               top: peg.y - PEG_RADIUS,
             }}
-            animate={hitPegs.has(index) ? { scale: [1, 1.5, 1] } : {}}
-            transition={{ duration: 0.2 }}
           />
         ))}
-        
-        {/* Particles */}
+
+        {/* Explosions */}
         <AnimatePresence>
-          {particles.map((particle) => (
+          {explosions.map(exp => (
             <motion.div
-              key={particle.id}
-              className={styles.particle}
-              style={{
-                left: particle.x,
-                top: particle.y,
-                background: particle.color,
-              }}
-              initial={{ scale: 1, opacity: 1 }}
-              animate={{
-                scale: 0,
-                opacity: 0,
-                x: (Math.random() - 0.5) * 50,
-                y: (Math.random() - 0.5) * 50,
-              }}
+              key={exp.id}
+              className={styles.explosion}
+              style={{ left: exp.x, top: exp.y }}
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 3, opacity: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             />
           ))}
         </AnimatePresence>
-        
-        {/* Ball */}
-        {ball && (
+
+        {/* Balls */}
+        {displayBalls.filter(b => !b.finished).map(ball => (
           <motion.div
+            key={ball.id}
             className={styles.ball}
             style={{
               left: ball.x - BALL_RADIUS,
               top: ball.y - BALL_RADIUS,
+              backgroundColor: ball.color,
+              boxShadow: `0 0 15px ${ball.color}`,
             }}
-            animate={{ rotate: ball.vx * 10 }}
           >
-            <span className={styles.ballNumber}>{currentWinnerIndex + 1}</span>
+            <span className={styles.ballName}>{ball.name}</span>
           </motion.div>
-        )}
-        
-        {/* Slots */}
-        <div className={styles.slots}>
-          {slots.map((slot, index) => (
+        ))}
+
+        {/* Exit hole */}
+        <div 
+          className={styles.exitHole}
+          style={{
+            left: (BOARD_WIDTH - EXIT_WIDTH) / 2,
+            width: EXIT_WIDTH,
+          }}
+        >
+          <span className={styles.exitLabel}>🏁 결승점</span>
+        </div>
+
+        {/* Finish order display */}
+        <div className={styles.finishList}>
+          <div className={styles.finishTitle}>도착 순서</div>
+          {finishedBalls.slice(-8).reverse().map((ball, idx) => (
             <motion.div
-              key={slot.student.id}
-              className={`${styles.slot} ${slot.selected ? styles.slotSelected : ''}`}
-              style={{
-                width: slot.width,
-                '--slot-color': slotColors[index],
-              } as React.CSSProperties}
-              animate={slot.selected ? { scale: [1, 1.1, 1] } : {}}
-              transition={{ duration: 0.3 }}
+              key={ball.id}
+              className={`${styles.finishItem} ${idx < winnersCount ? styles.isWinner : ''}`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              style={{ borderColor: ball.color }}
             >
-              <span className={styles.slotName}>{slot.student.name}</span>
+              <span className={styles.finishRank}>
+                {finishedBalls.length - finishedBalls.indexOf(ball)}위
+              </span>
+              <span className={styles.finishName}>{ball.name}</span>
             </motion.div>
           ))}
         </div>
@@ -372,25 +482,30 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
 
       {/* Winner Display */}
       <AnimatePresence>
-        {winners.length > 0 && (
+        {phase === 'complete' && winners.length > 0 && (
           <motion.div
             className={styles.winnerDisplay}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring' }}
           >
-            <h3 className={styles.winnerTitle}>🎯 당첨자 🎯</h3>
+            <h3 className={styles.winnerTitle}>🏆 최후의 생존자 🏆</h3>
+            <p className={styles.winnerSubtitle}>마지막까지 버틴 당첨자!</p>
             <div className={styles.winnerList}>
-              {winners.map((winner, index) => (
+              {winners.map((ball, index) => (
                 <motion.div
-                  key={winner.id}
+                  key={ball.id}
                   className={styles.winnerItem}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.2 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.3 }}
+                  style={{ 
+                    borderColor: ball.color,
+                    boxShadow: `0 0 20px ${ball.color}40`
+                  }}
                 >
                   <span className={styles.winnerIcon}>🎊</span>
-                  <span className={styles.winnerName}>{winner.name}</span>
+                  <span className={styles.winnerName}>{ball.name}</span>
                 </motion.div>
               ))}
             </div>
@@ -398,19 +513,20 @@ export function PinballAnimation({ students, winnersCount, onComplete, onStart }
         )}
       </AnimatePresence>
 
+      {/* Controls */}
       <div className={styles.controls}>
         {phase === 'idle' && (
           <button className="btn btn-primary" onClick={handleStart}>
-            🎯 추첨 시작
+            🎯 레이스 시작
           </button>
         )}
         {phase === 'dropping' && (
-          <div className={styles.droppingText}>
+          <div className={styles.statusText}>
             <motion.span
-              animate={{ y: [0, -5, 0] }}
+              animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 0.5, repeat: Infinity }}
             >
-              공 떨어지는 중... ({currentWinnerIndex + 1}/{winnersCount})
+              {statusText} ({displayBalls.filter(b => !b.finished).length}명 남음)
             </motion.span>
           </div>
         )}
